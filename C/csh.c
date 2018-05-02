@@ -5,27 +5,51 @@
 #include <string.h>
 #include <sys/wait.h>
 
-/*
- *
- */
 void logoPrint() {
     printf("crazyshell@ufes:~$ ");
     return;
 }
 
+void trata_c(){
+     char resposta;
+     printf("\n");
+     logoPrint();
+     printf("Não adianta me enviar um sinal por Ctrl-c, não vou morrer!\n");
+     logoPrint();
+     printf("Você quer suspender meu filho que está rodando em foreground? S/n: ");
+     scanf("%c", &resposta);
+     /*  if(resposta == 's' || resposta == 'S' ){
+
+     }
+     else if(resposta == 'n' || resposta == "N")*/
+     return;
+}
+
+void limpa_Tela(){
+  if(fork() == 0){
+    execlp("clear","clear",NULL);
+  }
+  return;
+}
+
+int tamanhoPalavra(char* aux){
+    int i = 0;
+    int tam = 1;
+    while(aux[i]!='\0'){
+        tam++;i++;
+    }
+    return tam;
+}
+
 int main(int argc, char** argv) {
-    char entrada[500], comando[50], *token;
-    char p1[20] = "", p2[20] = "", p3[20] = "", p4[20] = "", p5[20] = "";
-    char* argvv[6] = {comando, p1, p2, p3, p4, p5};
-    char waitt[] = "wait", exitt[] = "exit";
+    char entrada[500], comando[50], *token, waitt[] = "wait", exitt[] = "exit";
+    char* argvv[6];
     int aux;
     pid_t pai, filho, neto = -1;
 
+    argvv[0] = comando;
     pai = getpid();
-
-    if(fork() == 0){
-    	execlp("clear","clear",NULL);
-    }
+    limpa_Tela();
     aux = wait(&aux);
 
     while (1) {
@@ -42,6 +66,8 @@ int main(int argc, char** argv) {
                 while (token != NULL) {
                     token = strtok(NULL, " \n");
                     if (token != NULL) {
+                        int tamanho = tamanhoPalavra(token);
+                        argvv[i] = (char*)malloc((tamanho+1)*sizeof(char));
                         strcpy(argvv[i], token);
                         i++;
                     }
@@ -51,11 +77,11 @@ int main(int argc, char** argv) {
                 }
 
                 if (strcmp(comando, waitt) == 0) {
-                    //ainda faz nada
+                    printf("Tu entrou no wait\n");
                     exit(1);
                 }
                 if (strcmp(comando, exitt) == 0) {
-                    //ainda faz nada
+                    printf("Tu entrou no exit\n");
                     exit(1);
                 }
                 filho = fork();
@@ -65,16 +91,29 @@ int main(int argc, char** argv) {
         if(getpid() == pai){
           aux = wait(&aux);
         }
+        int a = 1;
 
         if (filho == 0) {
-            //neto = fork();
-            int a = execvp(comando, argvv);
-            if (a < 0)return 0;
+            neto = fork();
+            if(neto == 0){
+              daemon(0,0);
+            }
+
+            a = execvp(comando, argvv);
+            if (a < 0){
+                a = 1;
+                a = execv(comando, argvv);
+                if(a < 0){
+                    printf("Opa isso não existe. Tente novamente...\n");
+                    exit(1);
+                }
+            }
         }
-        if(neto == 0){
-          daemon(0,0);
-          int a = execvp(comando, argvv);
-          if (a < 0)return 0;
+
+        if(pai == getpid()){
+            for(aux=1;aux<6;aux++){
+              free(argvv[aux]);
+            }
         }
     }
     return (EXIT_SUCCESS);
