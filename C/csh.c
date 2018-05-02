@@ -43,8 +43,6 @@ int tamanhoPalavra(char* aux){
 
 int main(int argc, char** argv) {
     char entrada[500], comando[50], *token, waitt[] = "wait", exitt[] = "exit";
-    //char p1[20] = "", p2[20] = "", p3[20] = "", p4[20] = "", p5[20] = "";
-    //char* argvv[6] = {comando, p1, p2, p3, p4, p5};
     char* argvv[6];
     int aux;
     pid_t pai, filho, neto = -1;
@@ -94,23 +92,24 @@ int main(int argc, char** argv) {
           aux = wait(&aux);
         }
         int a = 1;
-        
+
         if (filho == 0) {
             neto = fork();
             if(neto == 0){
               daemon(0,0);
             }
-            
+
             a = execvp(comando, argvv);
             if (a < 0){
                 a = 1;
                 a = execv(comando, argvv);
                 if(a < 0){
                     printf("Opa isso não existe. Tente novamente...\n");
+                    exit(1);
                 }
             }
         }
-        
+
         if(pai == getpid()){
             for(aux=1;aux<6;aux++){
               free(argvv[aux]);
