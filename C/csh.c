@@ -6,7 +6,7 @@
 #include <sys/wait.h>
 
 /*
- *
+ * aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
  */
 void logoPrint() {
     printf("crazyshell@ufes:~$ ");
