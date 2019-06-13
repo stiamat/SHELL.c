@@ -1,2 +1,3 @@
 # SHELL.c
-Modificação da Shell linux. Trabalho UFES - Roberta (SO)
+**Trabalho Sistema Operacionais - UFES - Prof.: Roberta Lima Gomes**
+Proposta do Trabalho: Modificação da Shell linux. 
